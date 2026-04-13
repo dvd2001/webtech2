@@ -21,7 +21,7 @@ export class LoginComponent implements OnInit {
 
   get datas() { return this.loginForm.value; }
 
-  onsubmit() {
+  onSubmit() {
     let currentUser = (JSON.stringify(this.loginForm.value?.username ?? ''));
     let currentPassword = (JSON.stringify(this.loginForm.value?.password ?? ''));
 
