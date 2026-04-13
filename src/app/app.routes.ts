@@ -12,7 +12,7 @@ export const routes: Routes = [
     { path: '', pathMatch: 'full', redirectTo: 'login' },
     { path: 'dashboard', component: DashboardComponent },
     { path: 'login', component: LoginComponent },
-    { path: 'register', component: RegistrationComponent },
+    { path: 'registration', component: RegistrationComponent },
     { path: 'products/create', component: ProductCreateComponent },
     { path: 'products', component: ProductListComponent },
     { path: 'products/:id/edit', component: ProductEditComponent }
