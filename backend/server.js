@@ -8,10 +8,7 @@ let express = require('express'),
 let now = new Date();
 
 mongoose.Promise = global.Promise;
-mongoose.connect(dbConfig.db, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-}).then(() => {
+mongoose.connect(dbConfig.db).then(() => {
     console.log('Database connected successfully ' + now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds());
 }).catch(err => {
     console.log('Could not connect to database : ' + err);
@@ -19,7 +16,6 @@ mongoose.connect(dbConfig.db, {
 
 const productRpute = require('./routes/product.route');
 const userRoute = require('./routes/user.route');
-const { server } = require('typescript');
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
