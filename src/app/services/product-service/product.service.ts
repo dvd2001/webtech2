@@ -9,20 +9,20 @@ import { Product } from '../../models/product';
 })
 export class ProductService {
 
-  private baseUrl = 'http://localhost:4000/api/products';
+  private urlBase = 'http://localhost:4000/api/products';
   private headers = new HttpHeaders().set('Content-Type', 'application/json');
   constructor(private http: HttpClient) { }
 
   createProduct(data: any): Observable<any> {
-    return this.http.post(this.baseUrl, data).pipe(catchError(this.errorMgmt));
+    return this.http.post(this.urlBase, data).pipe(catchError(this.errorMgmt));
   }
 
   getProducts(): Observable<any> {
-    return this.http.get(this.baseUrl);
+    return this.http.get(this.urlBase);
   }
 
   getProduct(id: any): Observable<any> {
-    const url = `${this.baseUrl}/${id}`;
+    const url = `${this.urlBase}/${id}`;
     return this.http.get(url, { headers: this.headers }).pipe(
       map((res: any) => {
         return res || {};
@@ -32,12 +32,12 @@ export class ProductService {
   }
 
   updateProduct(id: any, data: any): Observable<any> {
-    const url = `${this.baseUrl}/${id}`;
+    const url = `${this.urlBase}/${id}`;
     return this.http.put(url, data, { headers: this.headers }).pipe(catchError(this.errorMgmt));
   }
 
   deleteProduct(id: any): Observable<any> {
-    const url = `${this.baseUrl}/${id}`;
+    const url = `${this.urlBase}/${id}`;
     return this.http.delete(url, { headers: this.headers }).pipe(catchError(this.errorMgmt));
   }
 

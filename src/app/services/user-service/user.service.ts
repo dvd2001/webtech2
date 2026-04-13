@@ -8,20 +8,20 @@ import { User } from '../../models/user';
   providedIn: 'root',
 })
 export class UserService {
-  private baseUrl = 'http://localhost:4000/api/users';
+  private urlBase = 'http://localhost:4000/api/users';
   private headers = new HttpHeaders().set('Content-Type', 'application/json');
   private currentUser = new User();
   constructor(private http: HttpClient) { }
   createUser(data: any): Observable<any> {
-    return this.http.post(this.baseUrl, data).pipe(catchError(this.errorMgmt));
+    return this.http.post(this.urlBase, data).pipe(catchError(this.errorMgmt));
   }
 
   getUsers(): Observable<any> {
-    return this.http.get(this.baseUrl);
+    return this.http.get(this.urlBase);
   }
 
   getUser(id: any): Observable<any> {
-    const url = `${this.baseUrl}/${id}`;
+    const url = `${this.urlBase}/${id}`;
     return this.http.get(url, { headers: this.headers }).pipe(
       map((res: any) => {
         return res || {};
@@ -31,12 +31,12 @@ export class UserService {
   }
 
   updateUser(id: any, data: any): Observable<any> {
-    const url = `${this.baseUrl}/${id}`;
+    const url = `${this.urlBase}/${id}`;
     return this.http.put(url, data, { headers: this.headers }).pipe(catchError(this.errorMgmt));
   }
 
   deleteUser(id: any): Observable<any> {
-    const url = `${this.baseUrl}/${id}`;
+    const url = `${this.urlBase}/${id}`;
     return this.http.delete(url, { headers: this.headers }).pipe(catchError(this.errorMgmt));
   }
 
