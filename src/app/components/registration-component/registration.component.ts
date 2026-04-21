@@ -1,6 +1,11 @@
 import { Component, NgZone, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, FormGroupDirective, NgForm, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, FormGroupDirective, NgForm, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { UserService } from '../../services/user-service/user.service';
 
@@ -15,6 +20,14 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
   selector: 'app-registration.component',
   templateUrl: './registration.component.html',
   styleUrl: './registration.component.css',
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule
+  ]
 })
 export class RegistrationComponent implements OnInit {
   registrationForm = new FormGroup({
@@ -43,7 +56,7 @@ export class RegistrationComponent implements OnInit {
   onSubmit() {
     this.submitted = true;
     if (!this.createFrom?.valid) {
-      return false;
+      return;
     } else {
       this.userService.createUser(this.createFrom?.value).subscribe(
         (res) => {
