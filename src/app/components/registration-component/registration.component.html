@@ -1,6 +1,6 @@
 <mat-card class="menuCard">
     <mat-card-content>
-        <button mat-raised-button routerLinkActive="/login">Sign In</button>
+        <button mat-raised-button routerLink="/login" routerLinkActive="active">Sign In</button>
     </mat-card-content>
 </mat-card>
 
@@ -8,21 +8,31 @@
 
     <h2 class="title">Registration</h2>
     <mat-card-content>
-        <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()" class="form">
+        <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()" class="form" novalidate>
             <mat-form-field>
-                <input matInput type="text" placeholder="Name" formControlName="name" required>
+                <input matInput type="text" placeholder="Name" formControlName="name">
+                <mat-error *ngIf="myForm.name.hasError('required')">Name is required.</mat-error>
+                <mat-error *ngIf="myForm.name.hasError('minlength')">Name must be at least 3 characters.</mat-error>
+                <mat-error *ngIf="myForm.name.hasError('pattern')">Name can contain only letters and spaces.</mat-error>
             </mat-form-field>
             <br>
 
             <mat-form-field>
-                <input matInput type="text" placeholder="Username" formControlName="username" required>
+                <input matInput type="text" placeholder="Username" formControlName="username">
+                <mat-error *ngIf="myForm.username.hasError('required')">Username is required.</mat-error>
+                <mat-error *ngIf="myForm.username.hasError('minlength')">Username must be at least 3 characters.</mat-error>
+                <mat-error *ngIf="myForm.username.hasError('pattern')">Username can contain only letters and numbers.</mat-error>
             </mat-form-field>
             <br>
 
             <mat-form-field>
-                <input matInput type="password" placeholder="Password" formControlName="password" required>
+                <input matInput type="password" placeholder="Password" formControlName="password">
+                <mat-error *ngIf="myForm.password.hasError('required')">Password is required.</mat-error>
+                <mat-error *ngIf="myForm.password.hasError('minlength')">Password must be at least 6 characters.</mat-error>
+                <mat-error *ngIf="myForm.password.hasError('pattern')">Password can contain only letters and numbers.</mat-error>
             </mat-form-field>
 
+            <div *ngIf="submitError">{{ submitError }}</div>
             <button mat-raised-button class="submit" type="submit">Sign Up</button>
         </form>
     </mat-card-content>

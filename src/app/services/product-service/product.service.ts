@@ -9,7 +9,8 @@ import { Product } from '../../models/product';
 })
 export class ProductService {
 
-  private urlBase = 'http://localhost:4000/api/products';
+  private apiBase = this.resolveApiBase();
+  private urlBase = `${this.apiBase}/products`;
   private headers = new HttpHeaders().set('Content-Type', 'application/json');
   constructor(private http: HttpClient) { }
 
@@ -17,8 +18,22 @@ export class ProductService {
     return this.http.post(this.urlBase, data).pipe(catchError(this.errorMgmt));
   }
 
-  getProducts(): Observable<any> {
-    return this.http.get(this.urlBase);
+  getProducts(): Observable<Product[]> {
+    return this.http.get<any>(this.urlBase).pipe(
+      map((res: any) => {
+        if (Array.isArray(res)) {
+          return res;
+        }
+
+        if (Array.isArray(res?.value)) {
+          return res.value;
+        }
+
+        const nestedArray = Object.values(res ?? {}).find(Array.isArray);
+        return Array.isArray(nestedArray) ? (nestedArray as Product[]) : [];
+      }),
+      catchError(this.errorMgmt)
+    );
   }
 
   getProduct(id: any): Observable<any> {
@@ -41,6 +56,16 @@ export class ProductService {
     return this.http.delete(url, { headers: this.headers }).pipe(catchError(this.errorMgmt));
   }
 
+  private resolveApiBase(): string {
+    if (typeof window === 'undefined') {
+      return 'http://localhost:4000/api';
+    }
+
+    return window.location.port === '4000'
+      ? '/api'
+      : `${window.location.protocol}//${window.location.hostname}:4000/api`;
+  }
+
   errorMgmt(error: HttpErrorResponse) {
     let errorMessage = '';
     if (error.error instanceof ErrorEvent) {
@@ -51,6 +76,6 @@ export class ProductService {
       errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
     }
     console.log(errorMessage);
-    return throwError(errorMessage);
+    return throwError(() => new Error(errorMessage));
   }
 }

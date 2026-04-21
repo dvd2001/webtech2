@@ -1,14 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Product } from '../../models/product';
 import { ProductService } from '../../services/product-service/product.service';
 import { UserService } from '../../services/user-service/user.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSidenavModule } from '@angular/material/sidenav';
 
 @Component({
   selector: 'app-product-list.component',
@@ -16,38 +13,62 @@ import { MatSidenavModule } from '@angular/material/sidenav';
   styleUrl: './product-list.component.css',
   imports: [
     CommonModule,
+    RouterLink,
+    RouterLinkActive,
     MatCardModule,
-    MatSidenavModule,
-    MatFormFieldModule,
-    MatInputModule,
     MatButtonModule
   ]
 })
 export class ProductListComponent implements OnInit {
-  Products: Product[] = [];
-  constructor(private router: Router, private productService: ProductService, private userService: UserService) {
+  products: Product[] = [];
+  loadError = '';
+
+  constructor(
+    private router: Router,
+    private productService: ProductService,
+    private userService: UserService,
+    private cdr: ChangeDetectorRef
+  ) { }
+
+  ngOnInit(): void {
+    if (!this.getUser()) {
+      return;
+    }
     this.readProducts();
-    this.getUser();
   }
-  ngOnInit(): void { }
+
   readProducts() {
-    this.productService.getProducts().subscribe((data) => {
-      this.Products = data;
+    this.loadError = '';
+    this.productService.getProducts().subscribe({
+      next: (data) => {
+        this.products = data;
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.log(error);
+        this.products = [];
+        this.loadError = 'Products could not be loaded.';
+        this.cdr.detectChanges();
+      }
     });
   }
-  getUser() {
+
+  getUser(): boolean {
     if (this.userService.getCurrentUser() === null) {
       this.router.navigate(['/login']);
+      return false;
     }
+
+    return true;
   }
 
   edit(index: number) {
-    const id = this.Products[index]._id;
+    const id = this.products[index]._id;
     this.router.navigate(['/products/' + id + '/edit']);
   }
 
   delete(index: number) {
-    const id = this.Products[index]._id;
+    const id = this.products[index]._id;
     this.productService.deleteProduct(id).subscribe(() => {
       this.readProducts();
     });

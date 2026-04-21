@@ -23,9 +23,16 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.use(cors());
-app.use('/', express.static(path.join(__dirname, 'dist/webtech2')));
+app.use('/', express.static(path.join(__dirname, '..', 'dist', 'webtech2', 'browser')));
 app.use('/api', productRpute);
 app.use('/api', userRoute);
+app.use((req, res, next) => {
+    if (req.path.startsWith('/api')) {
+        return next();
+    }
+
+    res.sendFile(path.join(__dirname, '..', 'dist', 'webtech2', 'browser', 'index.html'));
+});
 
 const port = process.env.PORT || 4000;
 const server = app.listen(port, () => {

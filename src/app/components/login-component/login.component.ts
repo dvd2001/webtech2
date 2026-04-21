@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { UserService } from '../../services/user-service/user.service';
-import { Router } from "@angular/router";
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -15,6 +15,8 @@ import { MatInputModule } from '@angular/material/input';
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    RouterLink,
+    RouterLinkActive,
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
@@ -35,21 +37,31 @@ export class LoginComponent implements OnInit {
   get datas() { return this.loginForm.value; }
 
   onSubmit() {
-    let currentUser = (JSON.stringify(this.loginForm.value?.username ?? ''));
-    let currentPassword = (JSON.stringify(this.loginForm.value?.password ?? ''));
+    const currentUser = this.loginForm.value?.username ?? '';
+    const currentPassword = this.loginForm.value?.password ?? '';
+    const errorElement = document.getElementById('wrongDatas');
+    if (errorElement) {
+      errorElement.innerHTML = '';
+    }
 
-    this.userService.getUsers().subscribe((data) => {
-      this.users = data;
-      for (let user of this.users) {
-        if (currentUser === JSON.stringify(user.username) && currentPassword === JSON.stringify(user.password)) {
-          this.userService.setCurrentUser(user);
-          this.router.navigate(['/products']);
-          return;
+    this.userService.getUsers().subscribe({
+      next: (data) => {
+        this.users = data;
+        for (const user of this.users) {
+          if (currentUser === user.username && currentPassword === user.password) {
+            this.userService.setCurrentUser(user);
+            this.router.navigate(['/products']);
+            return;
+          }
         }
-      }
-      const errorElement = document.getElementById('wrongDatas');
-      if (errorElement) {
-        errorElement.innerHTML = 'Wrong username or password!';
+        if (errorElement) {
+          errorElement.innerHTML = 'Wrong username or password!';
+        }
+      },
+      error: () => {
+        if (errorElement) {
+          errorElement.innerHTML = 'Login failed. Please check that the backend is running.';
+        }
       }
     });
   }

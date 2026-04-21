@@ -6,7 +6,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard.component',
@@ -14,6 +14,8 @@ import { Router } from '@angular/router';
   styleUrl: './dashboard.component.css',
   imports: [
     CommonModule,
+    RouterLink,
+    RouterLinkActive,
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
@@ -25,21 +27,27 @@ export class DashboardComponent implements OnInit {
   username!: string;
   name!: string;
 
-  constructor(private userService: UserService, private router: Router) { this.getUser(); }
+  constructor(private userService: UserService, private router: Router) { }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    this.getUser();
+  }
+
   getUser(): void {
-    if (this.userService.getCurrentUser().username == null) {
+    const currentUser = this.userService.getCurrentUser();
+    if (!currentUser) {
       this.router.navigate(['/login']);
+      return;
     }
-    this.user = this.userService.getCurrentUser();
+
+    this.user = currentUser;
     this.name = JSON.stringify(this.user.name);
     this.username = JSON.stringify(this.user.username);
   }
 
   logout(): void {
     this.user = new User();
-    this.userService.setCurrentUser(this.user);
+    this.userService.setCurrentUser(null);
     this.router.navigate(['/login']);
   }
 }

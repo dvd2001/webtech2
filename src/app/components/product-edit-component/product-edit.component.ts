@@ -1,7 +1,7 @@
 import { Component, NgZone, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormGroupDirective, NgForm, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { ProductService } from '../../services/product-service/product.service';
 import { UserService } from '../../services/user-service/user.service';
 import { CommonModule } from '@angular/common';
@@ -24,6 +24,8 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    RouterLink,
+    RouterLinkActive,
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
@@ -31,16 +33,18 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
   ]
 })
 export class ProductEditComponent implements OnInit {
+  productId = '';
+  submitError = '';
 
   constructor(
     private formBuilder: FormBuilder,
     private productService: ProductService,
     private userService: UserService,
     private router: Router,
+    private activatedRoute: ActivatedRoute,
     private ngZone: NgZone
   ) {
     this.mainForm();
-    this.getUser();
   }
 
   get myFrom() {
@@ -51,11 +55,25 @@ export class ProductEditComponent implements OnInit {
   editProductForm!: FormGroup;
   matcher = new MyErrorStateMatcher();
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    if (!this.getUser()) {
+      return;
+    }
+
+    this.productId = this.activatedRoute.snapshot.paramMap.get('id') ?? '';
+    if (!this.productId) {
+      this.router.navigateByUrl('/products');
+      return;
+    }
+
+    this.productService.getProduct(this.productId).subscribe((product) => {
+      this.editProductForm.patchValue(product);
+    });
+  }
 
   mainForm() {
     this.editProductForm = this.formBuilder.group({
-      name: ['', [Validators.required, Validators.minLength(5), Validators.pattern('^[a-zA-Z]+$')]],
+      name: ['', [Validators.required, Validators.minLength(2), Validators.pattern('^[a-zA-Z ]+$')]],
       quantity: ['', [Validators.required, Validators.min(0), Validators.pattern('^[0-9]+$')]],
       typeOfQuantity: ['', [Validators.required]],
     });
@@ -63,21 +81,29 @@ export class ProductEditComponent implements OnInit {
 
   onSubmit(): void {
     this.submitted = true;
+    this.submitError = '';
     if (!this.editProductForm.valid) {
+      this.editProductForm.markAllAsTouched();
       return;
-    } else {
-      this.productService.createProduct(this.editProductForm.value).subscribe(
-        (res) => {
-          console.log('Product successfully created!');
-          this.ngZone.run(() => this.router.navigateByUrl('/products'));
-        }, (error) => { console.log(error); }
-      );
     }
+
+    this.productService.updateProduct(this.productId, this.editProductForm.getRawValue()).subscribe(
+      () => {
+        console.log('Product successfully updated!');
+        this.ngZone.run(() => this.router.navigateByUrl('/products'));
+      }, (error) => {
+        console.log(error);
+        this.submitError = 'Product could not be updated.';
+      }
+    );
   }
 
-  getUser() {
+  getUser(): boolean {
     if (this.userService.getCurrentUser() === null) {
       this.router.navigateByUrl('/login');
+      return false;
     }
+
+    return true;
   }
 }

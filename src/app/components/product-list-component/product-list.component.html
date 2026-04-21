@@ -6,16 +6,18 @@
     </mat-card-content>
 </mat-card>
 
-<mat-sidenav-container class="sidenav">
-    <div class="list">
-        <mat-card class="cardList" *ngFor="let product of Products; let i = index">
-            <mat-card-title class="title">{{ product.name }}</mat-card-title>
-            <mat-card-content>
-                <div>Quantity: {{ product.quantity }}</div>
-                <div>Type of Quantity: {{ product.typeOfQuantity }}</div>
-            </mat-card-content>
-            <button mat-raised-button class="editBtn" (click)="edit(i)">Edit</button>
-            <button mat-raised-button class="deleteBtn" (click)="delete(i)">Delete</button>
-        </mat-card>
-    </div>
-</mat-sidenav-container>
+<div class="list">
+    <div *ngIf="loadError">{{ loadError }}</div>
+
+    <mat-card class="cardList" *ngFor="let product of products; let i = index">
+        <mat-card-title class="title">{{ product.name }}</mat-card-title>
+        <mat-card-content>
+            <div>Quantity: {{ product.quantity }}</div>
+            <div>Type of Quantity: {{ product.typeOfQuantity }}</div>
+        </mat-card-content>
+        <button mat-raised-button class="editBtn" (click)="edit(i)">Edit</button>
+        <button mat-raised-button class="deleteBtn" (click)="delete(i)">Delete</button>
+    </mat-card>
+
+    <div *ngIf="!loadError && products.length === 0">No products found.</div>
+</div>

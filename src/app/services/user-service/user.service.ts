@@ -8,10 +8,14 @@ import { User } from '../../models/user';
   providedIn: 'root',
 })
 export class UserService {
-  private urlBase = 'http://localhost:4000/api/users';
+  private readonly storageKey = 'currentUser';
+  private apiBase = this.resolveApiBase();
+  private urlBase = `${this.apiBase}/users`;
   private headers = new HttpHeaders().set('Content-Type', 'application/json');
-  private currentUser = new User();
-  constructor(private http: HttpClient) { }
+  private currentUser: User | null = null;
+  constructor(private http: HttpClient) {
+    this.currentUser = this.readStoredUser();
+  }
   createUser(data: any): Observable<any> {
     return this.http.post(this.urlBase, data).pipe(catchError(this.errorMgmt));
   }
@@ -40,12 +44,49 @@ export class UserService {
     return this.http.delete(url, { headers: this.headers }).pipe(catchError(this.errorMgmt));
   }
 
-  setCurrentUser(user: User): void {
+  setCurrentUser(user: User | null): void {
     this.currentUser = user;
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    if (user) {
+      window.localStorage.setItem(this.storageKey, JSON.stringify(user));
+    } else {
+      window.localStorage.removeItem(this.storageKey);
+    }
   }
 
-  getCurrentUser(): User {
+  getCurrentUser(): User | null {
     return this.currentUser;
+  }
+
+  private resolveApiBase(): string {
+    if (typeof window === 'undefined') {
+      return 'http://localhost:4000/api';
+    }
+
+    return window.location.port === '4000'
+      ? '/api'
+      : `${window.location.protocol}//${window.location.hostname}:4000/api`;
+  }
+
+  private readStoredUser(): User | null {
+    if (typeof window === 'undefined') {
+      return null;
+    }
+
+    const storedUser = window.localStorage.getItem(this.storageKey);
+    if (!storedUser) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(storedUser) as User;
+    } catch {
+      window.localStorage.removeItem(this.storageKey);
+      return null;
+    }
   }
 
   errorMgmt(error: HttpErrorResponse) {
@@ -58,6 +99,6 @@ export class UserService {
       errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
     }
     console.log(errorMessage);
-    return throwError(errorMessage);
+    return throwError(() => new Error(errorMessage));
   }
 }
