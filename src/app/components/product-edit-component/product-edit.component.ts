@@ -73,8 +73,8 @@ export class ProductEditComponent implements OnInit {
 
   mainForm() {
     this.editProductForm = this.formBuilder.group({
-      name: ['', [Validators.required, Validators.minLength(2), Validators.pattern('^[a-zA-Z ]+$')]],
-      quantity: ['', [Validators.required, Validators.min(0), Validators.pattern('^[0-9]+$')]],
+      name: ['', [Validators.required, Validators.minLength(2), Validators.pattern('^[a-zA-Z0-9 ]+$')]],
+      quantity: ['', [Validators.required, Validators.min(0), Validators.pattern('^[0.0*-9.9*]+$')]],
       typeOfQuantity: ['', [Validators.required]],
     });
   }

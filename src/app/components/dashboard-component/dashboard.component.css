@@ -1,44 +1,49 @@
 .logout {
-    color: #0074c2;
-    background-color: #ffffff;
     font-size: 18px;
-    width: 10%;
-    margin-left: 60%;
 }
 
-
-
-
-.menucard {
-    width: 90%;
-    margin-right: 5%;
-    margin-left: 5%;
+.menuCard {
+    background-color: lightskyblue;
+    width: 100%;
+    border-radius: 10px;
 }
 
 .card {
-    background-color: #b8e3ff;
+    background-color: lightskyblue;
     width: 30%;
     margin: 0 auto;
-    margin-top: 5%;
+    margin-top: 10%;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
 }
 
-
-
-.menubtn {
-    margin: 10px;
-    width: 12%;
+.menuBtn {
+    width: fit-content;
     font-size: 18px;
 }
 
 button {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    background-color: #0074c2;
-    color: rgb(255, 255, 255);
+    font-family: 'Times New Roman', Times, serif;
     font-size: 18px;
+    background-color: darkcyan !important;
+    border-radius: 10px;
+}
+
+button:hover {
+    opacity: 0.75;
 }
 
 .title {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    color: rgb(0, 0, 0);
+    font-family: 'Times New Roman', Times, serif;
     margin: 0 auto;
+}
+
+.type {
+    font-weight: bold;
+    margin-right: 20px;
+}
+
+.content {
+    margin: 10px
 }

@@ -7,8 +7,8 @@
 <mat-card class="card">
     <h2 class="title">Dashboard</h2>
     <mat-card-content>
-        <div>Name: {{this.name}}</div>
-        <div>Username: {{this.username}}</div>
+        <div class="content"><span class="type">Name: </span>{{this.name.split('"')[1]}}</div>
+        <div class="content"><span class="type">Username: </span>{{this.username.split('"')[1]}}</div>
         <button mat-raised-button routerLinkActive="active" (click)="logout()" class="menuBtn">Logout</button>
     </mat-card-content>
 </mat-card>
